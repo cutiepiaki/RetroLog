@@ -13,17 +13,31 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,25 +52,53 @@ class MainActivity : ComponentActivity() {
         setContent {
             RetroLogTheme {
                 val navController = rememberNavController()
+                val navItemList = listOf(
+                    NavItem("Home", Icons.Default.Home, "home"),
+                    NavItem("Explore", Icons.Default.Search, "explore"),
+                    NavItem("Favorite", Icons.Default.Star, "favorite"),
+                )
+                var selectedIndex by remember {
+                    mutableIntStateOf(0)
+                }
                 NavHost(
                     navController = navController,
                     startDestination = "home"
                 ) {
                     composable("home") {
-                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Scaffold(
+                            modifier = Modifier.fillMaxSize(),
+                            bottomBar = {
+                                NavigationBar {
+                                    navItemList.forEachIndexed { index, item ->
+                                        NavigationBarItem(
+                                            selected = selectedIndex == index,
+                                            onClick = {
+                                                navController.navigate(item.route)
+                                            },
+                                            icon = {
+                                                Icon(imageVector = item.icon, contentDescription = null)
+                                            },
+                                            label = {
+                                                Text(text = item.title)
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                        ) { innerPadding ->
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceEvenly
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 Text(
                                     text = "Платформы",
-                                    modifier = Modifier.padding(innerPadding)
+                                    modifier = Modifier.padding(innerPadding.calculateTopPadding())
                                 )
 
                                 Row (
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
                                 ){
                                     PlatformButton(
                                         label = PlatformLabel.GB.label,
@@ -75,7 +117,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
                                     PlatformButton(
@@ -94,7 +136,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                                     horizontalArrangement = Arrangement.SpaceEvenly,
                                 ) {
                                     PlatformButton(
@@ -117,12 +159,13 @@ class MainActivity : ComponentActivity() {
                         val label = backStackEntry.arguments?.getString("label")
                         GamesListScreen(label = label ?: "")
                     }
-
+                    composable("explore") {
+                        ExploreScreen()
+                    }
                 }
             }
         }
     }
-
 
     @Composable
     fun PlatformButton(
@@ -157,6 +200,19 @@ class MainActivity : ComponentActivity() {
         SEGAMD("Sega MD"),
         PS1("Sony PS1")
     }
+
+
+    data class NavItem(
+        val title: String,
+        val icon: ImageVector,
+        val route: String,
+    )
+
+//    @Composable
+//    fun NavigationBar(
+//        navController: NavController,
+//        color: Color = MaterialTheme.colorScheme.primary
+//    ) {}
 
     @Preview
     @Composable

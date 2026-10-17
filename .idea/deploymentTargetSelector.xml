@@ -16,10 +16,21 @@
       </SelectionState>
       <SelectionState runConfigName="main">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-13T12:54:11.872009400Z">
+        <DropdownSelection timestamp="2026-10-16T13:48:00.700612700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Wireless" identifier="serviceName=adb-cbf216e8-JPXOvg" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=cbf216e8" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="ExplorePreview">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2026-10-16T13:48:00.700612700Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=cbf216e8" />
             </handle>
           </Target>
         </DropdownSelection>
