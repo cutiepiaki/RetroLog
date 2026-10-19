@@ -26,9 +26,8 @@ fun ExploreScreen() {
             items(allGames) { game -> Text(game.title)}
         }
     }
-
-
 }
+
 @Preview
 @Composable
 fun ExplorePreview() {
