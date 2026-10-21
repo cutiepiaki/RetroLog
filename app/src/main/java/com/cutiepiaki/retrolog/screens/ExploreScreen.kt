@@ -17,7 +17,7 @@ import com.cutiepiaki.retrolog.data.GameRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreScreen(innerPadding: PaddingValues) {
-    val allGames = GameRepository.games
+    val allGames = GameRepository.games.sortedBy { it.title }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
