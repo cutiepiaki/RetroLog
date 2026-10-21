@@ -9,11 +9,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import com.cutiepiaki.retrolog.screens.HomeScreen
 import com.cutiepiaki.retrolog.ui.theme.RetroLogTheme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -45,12 +48,14 @@ class MainActivity : ComponentActivity() {
                     NavItem("Explore", Icons.Default.Search, "explore"),
                     NavItem("Favorite", Icons.Default.Star, "favorite"),
                 )
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                val platformLabel = navBackStackEntry?.arguments?.getString("label")
+                val platform = PlatformLabel.entries.find { it.label == platformLabel }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         NavigationBar {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.destination?.route
                             navItemList.forEach { item ->
                                 NavigationBarItem(
                                     selected = currentRoute == item.route,
@@ -66,7 +71,23 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-                    }
+                    },
+                    topBar =
+                        {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        when (currentRoute) {
+                                            "home" -> "Платформы"
+                                            "explore" -> "Все игры"
+                                            "favorite" -> "Избранное"
+                                            "games/{label}" -> "Игры ${platform?.fullLabel ?: "платформы"}"
+                                            else -> "RetroLog"
+                                        }
+                                    )
+                                }
+                            )
+                        }
 
                 ) { innerPadding ->
                     NavHost(
@@ -74,7 +95,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = "home"
                     ) {
                         composable("home") {
-                            HomeScreen(navController)
+                            HomeScreen(innerPadding, navController)
                         }
                         composable(
                             route = "games/{label}",
@@ -83,13 +104,13 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val label = backStackEntry.arguments?.getString("label")
-                            GamesListScreen(label = label ?: "")
+                            GamesListScreen(innerPadding, label = label ?: "")
                         }
                         composable("explore") {
-                            ExploreScreen()
+                            ExploreScreen(innerPadding)
                         }
                         composable("favorite") {
-                            FavoriteScreen()
+                            FavoriteScreen(innerPadding)
                         }
                     }
                 }
